@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ book.title }} - BookSpace</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .back-nav {
+            display: block;
+            padding: 20px 40px;
+            color: #007185;
+            text-decoration: none;
+            font-size: 14px;
+            background: #fcfcfc;
+            border-bottom: 1px solid #eee;
+        }
+
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 20px auto;
+            gap: 40px;
+            padding: 0 40px;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .image-col {
+            flex: 0 0 350px;
+            text-align: center;
+        }
+
+        .image-col img {
+            max-width: 100%;
+            height: auto;
+            position: sticky;
+            top: 80px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .info-col {
+            flex: 1;
+            color: #111;
+            max-width: 600px;
+        }
+
+        .info-col h1 {
+            font-size: 32px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        .author-link {
+            color: #007185;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .rating-row {
+            color: #FFA41C;
+            margin: 10px 0;
+            font-size: 18px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .rating-row span {
+            font-size: 14px;
+            color: #565959;
+        }
+
+        .divider {
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .price-text {
+            color: #B12704;
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        .info-meta {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .about-section h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .about-section p {
+            line-height: 1.6;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .buy-col {
+            flex: 0 0 320px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 25px;
+            height: fit-content;
+            background: #fff;
+            position: sticky;
+            top: 80px;
+        }
+
+        .buy-col .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .buy-col .price-row .price {
+            font-size: 24px;
+            font-weight: 500;
+            color: #B12704;
+        }
+
+        .buy-col .stock-status {
+            color: #007600;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .buy-col p {
+            font-size: 13px;
+            margin: 5px 0;
+            color: #565959;
+        }
+
+        /* Return Details Link Styling */
+        .return-link {
+            font-size: 12px;
+            color: #007185;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+        }
+
+        .return-link:hover {
+            text-decoration: underline;
+            color: #c45500;
+        }
+
+        .btn-large {
+            width: 100%;
+            padding: 18px;
+            border-radius: 30px;
+            border: 1px solid;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            color: black;
+            box-sizing: border-box;
+        }
+
+        .cart-btn {
+            background: #ffd814;
+            border-color: #fcd200;
+        }
+
+        .cart-btn:hover {
+            background: #f7ca00;
+        }
+
+        .buy-btn {
+            background: #ffa41c;
+            border-color: #ff9900;
+        }
+
+        .buy-btn:hover {
+            background: #fa8900;
+        }
+
+        .secure-note {
+            font-size: 12px;
+            color: #565959;
+            text-align: center;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="/" class="back-nav">← Back to search results</a>
+
+    <div class="main-container">
+
+        <div class="image-col">
+            <img src="{{ book.cover_image_url }}"
+                onerror="this.src='https://via.placeholder.com/350x500?text=No+Cover+Available'">
+        </div>
+
+        <div class="info-col">
+            <h1>{{ book.title }}</h1>
+            <a href="#" class="author-link">By {{ book.author }}</a>
+            <div class="rating-row">★★★★☆ <span>(4.2 stars) | 185 ratings</span></div>
+
+            <div class="divider"></div>
+
+            <p>Our Price: <span class="price-text">₹{{ book.price }}</span></p>
+            <p class="info-meta"><strong>Genre:</strong> {{ book.genre }}</p>
+
+            <div class="about-section">
+                <h3>About this book</h3>
+                <p>{{ book.long_description }}</p>
+            </div>
+        </div>
+
+        <div class="buy-col">
+            <div class="price-row">
+                <span class="price">₹{{ book.price }}</span>
+                <button class="return-link"
+                    onclick="alert('7 Days Return Policy: This item is eligible for free replacement/return within 7 days of delivery.')">Returns
+                    details</button>
+            </div>
+
+            <p class="stock-status">In Stock</p>
+
+            <p>Ships from <strong>BookSpace.io</strong></p>
+            <p>Sold by <strong>BookSpace Retail</strong></p>
+
+            <a href="/add_to_cart/{{ book.book_id }}" class="btn-large cart-btn">Add to Cart</a>
+            <a href="/buy_now/{{ book.book_id }}" class="btn-large buy-btn">Buy Now</a>
+
+            <div class="secure-note">
+                🔒 Secure transaction
+                <p>Payment options available at checkout.</p>
+            </div>
+        </div>
+    </div>
+
+    {% include 'chatbot.html' %}
+    {% include 'tracker.html' %}
+</body>
+
+</html>

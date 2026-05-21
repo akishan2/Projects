@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>BookSpace.io</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f6f6;
+            margin: 0;
+        }
+
+        nav {
+            background-color: #131921;
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 40px;
+            display: flex;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px 0 0 4px;
+            border: none;
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            background: #febd69;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+
+        .main-layout {
+            display: flex;
+            padding: 20px;
+        }
+
+        .sidebar {
+            width: 200px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            height: fit-content;
+            border: 1px solid #ddd;
+        }
+
+        .sidebar h3 {
+            font-size: 16px;
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 8px 0;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .sidebar a:hover {
+            color: #ff9900;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding-left: 30px;
+        }
+
+        .book-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        /* FIXED BOOK CARD */
+        .book-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+            /* Ensures the card is tall enough for buttons */
+            box-sizing: border-box;
+            /* Prevents padding from breaking width */
+        }
+
+        .book-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        /* AMAZON STYLE BUTTONS - CLEANED UP */
+        .button-wrapper {
+            margin-top: auto;
+            /* Pushes the buttons to the very bottom of the card */
+            padding-top: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 8px 0;
+            /* Padding top/bottom only */
+            border-radius: 20px;
+            border: 1px solid;
+            cursor: pointer;
+            margin-top: 6px;
+            font-weight: bold;
+            font-size: 12px;
+            display: block;
+            text-decoration: none;
+            color: black;
+            box-sizing: border-box;
+            /* Keeps button width inside the card */
+        }
+
+        .cart-btn {
+            background: #ffd814;
+            border-color: #fcd200;
+        }
+
+        .cart-btn:hover {
+            background: #f7ca00;
+        }
+
+        .buy-btn {
+            background: #ffa41c;
+            border-color: #ff9900;
+        }
+
+        .buy-btn:hover {
+            background: #fa8900;
+        }
+
+        .flash-container {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001;
+        }
+
+        .flash-messages {
+            padding: 15px 30px;
+            background-color: #e7f4e4;
+            color: #2b7a1d;
+            border: 1px solid #d4edda;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="/" style="font-size:24px; font-weight:bold; color:white;">Book<span
+                style="color:#ff9900">Space</span></a>
+        <form class="search-bar" action="/" method="GET">
+            <input type="text" name="search" placeholder="Search for books or authors..."
+                value="{{ search_query if search_query else '' }}">
+            <button type="submit">🔍</button>
+        </form>
+        <div style="display:flex; gap:20px; align-items:center;">
+            <a href="/cart" style="color:white;">🛒 Cart <span
+                    style="background:#ff9900; color:black; padding:2px 6px; border-radius:50%; font-size:12px;">{{
+                    cart_count }}</span></a>
+            {% if session['username'] %}
+            <a href="/logout" style="color:white;">👤 {{ session['username'] }} (Logout)</a>
+            {% else %}
+            <a href="/login" style="color:white;">👤 Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="flash-container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div id="flash-msg" class="flash-messages">{{ messages[0] }}</div>
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="main-layout">
+        <div class="sidebar">
+            <h3>Genres</h3>
+            <a href="/" style="font-weight: bold; color: #ff9900;">Show All</a>
+            {% for genre in genres %}
+            <a href="/?genre={{ genre }}">{{ genre }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="content">
+            <h2 id="results-header">{% if books %}Results{% else %}Searching Library...{% endif %}</h2>
+            <div class="book-container" id="book-grid">
+                {% for book in books %}
+                <div class="book-card">
+                    <a href="/book/{{ book.book_id }}">
+                        <img src="{{ book.cover_image_url }}"
+                            onerror="this.onerror=null;this.src='https://via.placeholder.com/180x200?text=No+Image';">
+                        <h3 style="font-size: 14px; height: 35px; overflow: hidden; margin-bottom: 5px;">{{ book.title
+                            }}</h3>
+                        <p style="color: #B12704; font-weight: bold; margin: 5px 0;">₹{{ book.price }}</p>
+                    </a>
+                    <div class="button-wrapper">
+                        <a href="/add_to_cart/{{ book.book_id }}" class="btn cart-btn">Add to Cart</a>
+                        <a href="/buy_now/{{ book.book_id }}" class="btn buy-btn">Buy Now</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const msg = document.getElementById('flash-msg');
+            if (msg) msg.style.display = 'none';
+        }, 3000);
+
+        const searchQuery = "{{ search_query }}";
+        const localCount = {{ books| length }};
+
+        if (searchQuery && localCount === 0) {
+            fetch(`https://www.googleapis.com/books/v1/volumes?q=${searchQuery}`)
+                .then(response => response.json())
+                .then(data => {
+                    const grid = document.getElementById('book-grid');
+                    document.getElementById('results-header').innerText = "Global Library Results";
+                    if (data.items) {
+                        data.items.forEach(book => {
+                            const info = book.volumeInfo;
+                            const img = info.imageLinks ? info.imageLinks.thumbnail : 'https://via.placeholder.com/180x200?text=No+Image';
+                            grid.innerHTML += `
+                        <div class="book-card">
+                            <img src="${img}">
+                            <h3 style="font-size: 14px; height: 35px; overflow: hidden; margin-bottom: 5px;">${info.title}</h3>
+                            <p style="color: #B12704; font-weight: bold; margin: 5px 0;">₹299 (API Price)</p>
+                            <div class="button-wrapper">
+                                <button class="btn cart-btn" onclick="alert('This book is from the Global API. Search local inventory to buy.')">Add to Cart</button>
+                            </div>
+                        </div>
+                    `;
+                        });
+                    } else {
+                        document.getElementById('results-header').innerText = "No books found anywhere.";
+                    }
+                });
+        }
+    </script>
+    {% include 'chatbot.html' %}
+{% include 'tracker.html' %}
+</body>
+
+</html>

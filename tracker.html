@@ -1,0 +1,52 @@
+<!-- BookSpace Live Tracker -->
+<script>
+(function() {
+    // We only track meaningful clicks like buttons, links, or specific widgets
+    document.addEventListener("click", function(event) {
+        let target = event.target;
+        
+        // Traverse up to find if they clicked inside an A or BUTTON element
+        while (target && target.tagName !== "A" && target.tagName !== "BUTTON" && (!target.id || target.id.indexOf('chatbot') === -1)) {
+            target = target.parentElement;
+        }
+
+        if (target && target !== document) {
+            // Extract meaningful text to label what they clicked
+            let clickText = target.innerText || target.value || target.title || target.id || "Unknown Element";
+            clickText = clickText.trim().substring(0, 30).replace(/\n/g, ' ');
+
+            // Also keep track of the type of element (e.g. BUTTON, LINK)
+            let elType = target.tagName;
+            if (target.id.indexOf('chatbot') !== -1) elType = "CHATBOT UI";
+
+            // Send to logger
+            fetch('/log_click', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    element_type: elType,
+                    click_text: clickText,
+                    page_url: window.location.pathname
+                })
+            }).catch(e => { /* Ignore fetch errors for tracking */ });
+        }
+    });
+
+    // Automatically log when the user loads a new page
+    window.addEventListener("load", function() {
+        fetch('/log_click', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                element_type: "PAGE LOAD",
+                click_text: document.title,
+                page_url: window.location.pathname
+            })
+        }).catch(e => {});
+    });
+})();
+</script>

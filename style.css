@@ -1,0 +1,24 @@
+:root {
+    --amazon-navy: #131921;
+    --amazon-light: #232f3e;
+    --amazon-orange: #febd69;
+    --price-red: #B12704;
+    --bg-gray: #eaeded;
+}
+
+body { font-family: 'Arial', sans-serif; background-color: #f3f3f3; margin: 0; padding: 0; }
+.amazon-nav { background-color: #131921; color: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+.logo span { color: #ff9900; }
+.search-form input { padding: 8px; width: 300px; border-radius: 4px 0 0 4px; border: none; }
+.search-form button { padding: 8px; background: #febd69; border: none; border-radius: 0 4px 4px 0; cursor: pointer; }
+
+.main-container { padding: 20px; max-width: 1200px; margin: auto; }
+.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+.book-card { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+/* THIS FIXES THE ZOOMED IMAGES */
+.book-card img { width: 100%; height: 250px; object-fit: contain; margin-bottom: 10px; }
+
+.price-tag { color: #B12704; font-size: 1.2rem; font-weight: bold; margin: 10px 0; }
+.buy-now-btn { background: #ffd814; border: 1px solid #a88734; padding: 10px 20px; border-radius: 20px; text-decoration: none; color: black; display: inline-block; }
+.buy-now-btn:hover { background: #f7ca00; }
